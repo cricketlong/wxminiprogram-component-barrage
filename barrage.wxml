@@ -1,0 +1,5 @@
+<view style="width:100%;">
+  <text class="bullet" style="left: {{left}}px;">
+  {{text}}
+  </text>
+</view>

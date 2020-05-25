@@ -1,0 +1,5 @@
+.bullet {
+  position: absolute;
+  white-space: nowrap;
+  top: 0;
+}
