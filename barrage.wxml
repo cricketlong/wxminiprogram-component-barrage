@@ -1,5 +1,7 @@
 <view style="width:100%;">
-  <text class="bullet" style="left: {{left}}px;">
-  {{text}}
-  </text>
+  <view wx:for="{{bullets}}">
+    <text class="bullet" style="left: {{item.left}}px;top: {{item.top}}px;">
+      {{item.text}}
+    </text>
+  </view>
 </view>
