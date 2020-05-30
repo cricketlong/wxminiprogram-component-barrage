@@ -1,5 +1,5 @@
 <view style="width:100%;">
-  <view wx:for="{{bullets}}">
+  <view wx:for="{{bullets}}" wx:key="*this">
     <text class="bullet" style="left: {{item.left}}px;top: {{item.top}}px;">
       {{item.text}}
     </text>

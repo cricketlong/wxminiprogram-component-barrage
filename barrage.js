@@ -10,7 +10,8 @@ Component({
   data: {
     bullets: [],
     bulletsPool: [],
-    windowSize: 2,
+    numLanes: 2,
+    laneHeight: 8,
     nextBulletIndex: -1,
     left: 0,
     pace: 5,
@@ -27,17 +28,15 @@ Component({
         for (var i = 0;i < bullets.length;i++) {
           if(-bullets[i].left < bullets[i].width) {
             bullets[i].left -= thisPage.data.pace;
-            console.log("left");
           } else {
+            // try to get new bullet
             bullets[i].left = this.data.windowWidth;
             if (thisPage.hasNextBullet()) {
               bullets[i].displaying = false;
+              var top = bullets[i].top;
               bullets[i] = thisPage.getNextBullet();
               bullets[i].displaying = true;
-              console.log("next");
-            }
-            else {
-              console.log("reset");
+              bullets[i].top = top;
             }
           }
         }
@@ -54,46 +53,24 @@ Component({
       });
     },
 
-    addBulletToPool(text, left, top) {
+    addBulletToPool(text, left) {
       this.data.bulletsPool.push({"text": text,
                                   "left": left,
-                                  "top": top,
+                                  "top": 0,
                                   "width": text.length*10,
                                   "displaying": false});
     },
 
-    /*
-    emplaceFrontBullet(text, left, top) {
-      this.pushFrontBullet({"text": text, "left": left, "top": top, "width": text.length*10});
-    },
-
-    emplaceBackBullet(text, left, top) {
-      this.pushBackBullet({"text": text, "left": left, "top": top, "width": text.length*10});
-    },
-
-    pushFrontBullet(obj) {
-      this.data.bullets.unshift(obj);
-    },
-
-    pushBackBullet(obj) {
-      this.data.bullets.push(obj);
-    },
-
-    popFrontBullet() {
-      this.data.bullets.shift();
-    },*/
-
-    popBackBullet() {
-      this.data.bullets.pop();
-    },
-
     initBullets() {
-      if (this.data.windowSize > 0) {
-        for (var i = 0;i < this.data.windowSize;i++) {
+      if (this.data.numLanes > 0) {
+        var nBullets = this.data.numLanes < this.data.bulletsPool.length ?
+                       this.data.numLanes : this.data.bulletsPool.length;
+        for (var i = 0;i < nBullets;i++) {
           this.data.bullets.push(this.data.bulletsPool[i]);
           this.data.bullets[i].displaying = true;
+          this.data.bullets[i].top = i*this.data.laneHeight;
         }
-        this.data.nextBulletIndex = this.data.windowSize;
+        this.data.nextBulletIndex = this.data.numLanes;
       }
     },
 
@@ -111,8 +88,6 @@ Component({
         }
       }
 
-      console.log("nextIndex: " + this.data.nextBulletIndex);
-
       return b;
     },
 
@@ -127,12 +102,17 @@ Component({
       windowWidth: wx.getSystemInfoSync().windowWidth
     });
 
+    var lanes = [];
+    for (var i = 0;i < this.data.numLanes;i++) {
+      lanes[i] = false;
+    }
+
     // fill pool
-    this.addBulletToPool("biubiubiubiubiubiu", this.data.windowWidth, 0);
-    this.addBulletToPool("a", this.data.windowWidth, 15);
-    this.addBulletToPool("112233", this.data.windowWidth, 30);
-    //this.addBulletToPool("^_^", this.data.windowWidth, 45);
-    //this.addBulletToPool("<=====>", this.data.windowWidth, 60);
+    this.addBulletToPool("biubiubiubiubiubiu", this.data.windowWidth);
+    this.addBulletToPool("a", this.data.windowWidth);
+    this.addBulletToPool("112233", this.data.windowWidth);
+    this.addBulletToPool("^_^", this.data.windowWidth);
+    this.addBulletToPool("<=====>", this.data.windowWidth);
 
     this.initBullets();
 
