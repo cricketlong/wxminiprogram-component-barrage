@@ -1,21 +1,32 @@
 
 Component({
   properties: {
-    text: {
+    width: {
+      type: Number,
+      value: 0
+    },
+    bgImage: {
       type: String,
-      value: "text"
-    }
+      value: ""
+    },
+    bgImageWidth: {
+      type: String,
+      value: 0
+    },
+    bgImageHeight: {
+      type: String,
+      value: 0
+    },
   },
 
   data: {
     bullets: [],
     bulletsPool: [],
     numLanes: 2,
-    laneHeight: 8,
+    laneHeight: 12,
     nextBulletIndex: -1,
     left: 0,
     pace: 5,
-    windowWidth: 0,
     length: 20,
     interval: 200
   },
@@ -30,7 +41,7 @@ Component({
             bullets[i].left -= thisPage.data.pace;
           } else {
             // try to get new bullet
-            bullets[i].left = this.data.windowWidth;
+            bullets[i].left = this.data.width;
             if (thisPage.hasNextBullet()) {
               bullets[i].displaying = false;
               var top = bullets[i].top;
@@ -97,22 +108,20 @@ Component({
   },
 
   ready() {
-    this.setData({
-      left: wx.getSystemInfoSync().windowWidth,
-      windowWidth: wx.getSystemInfoSync().windowWidth
-    });
-
-    var lanes = [];
-    for (var i = 0;i < this.data.numLanes;i++) {
-      lanes[i] = false;
+    if (this.data.bgImage) {
+      this.setData({
+        bgImage: this.data.bgImage,
+        bgImageWidth: this.data.bgImageWidth,
+        bgImageHeight: this.data.bgImageHeight
+      });
     }
 
     // fill pool
-    this.addBulletToPool("biubiubiubiubiubiu", this.data.windowWidth);
-    this.addBulletToPool("a", this.data.windowWidth);
-    this.addBulletToPool("112233", this.data.windowWidth);
-    this.addBulletToPool("^_^", this.data.windowWidth);
-    this.addBulletToPool("<=====>", this.data.windowWidth);
+    this.addBulletToPool("biubiubiubiubiubiu", this.data.width);
+    this.addBulletToPool("a", this.data.width);
+    this.addBulletToPool("112233", this.data.width);
+    this.addBulletToPool("^_^", this.data.width);
+    this.addBulletToPool("<=====>", this.data.width);
 
     this.initBullets();
 
