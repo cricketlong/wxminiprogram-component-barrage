@@ -58,7 +58,7 @@ Component({
 
         var bullets = thisPage.data.bullets;
         for (var i = 0;i < bullets.length;i++) {
-          if(-bullets[i].left < bullets[i].width) {
+          if(bullets[i].left > -bullets[i].width) {
             bullets[i].left -= thisPage.data.pace;
           } else {
             thisPage.data.counter++;
@@ -185,16 +185,19 @@ Component({
       });
     },
 
-    async getBulletsFromUrls() {
-      if ((this.data.bulletsUrls.length > 0) && (this.data.bulletsPerUrl > 0)) {
-        var urls = this.data.bulletsUrls.split('|');
-        this.data.bulletsBuffer = [];
+    getBulletsFromUrls() {
+      var thisPage = this;
+      return new Promise(async (resolve, reject) => {
+      if ((thisPage.data.bulletsUrls.length > 0) && (thisPage.data.bulletsPerUrl > 0)) {
+        var urls = thisPage.data.bulletsUrls.split('|');
+        thisPage.data.bulletsBuffer = [];
         for (var i = 0;i < urls.length;i++) {
-          var newBulletTexts = await this.getBulletsFromUrlSync(urls[i]);
-          this.data.bulletsBuffer.push(...newBulletTexts);
+          var newBulletTexts = await thisPage.getBulletsFromUrlSync(urls[i]);
+          thisPage.data.bulletsBuffer.push(...newBulletTexts);
         }
       }
-    },
+    });
+  },
   },
 
   ready() {
@@ -206,14 +209,9 @@ Component({
       });
     }
 
-    // fill pool
-    /*
-    this.addBulletToPool("biubiubiubiubiubiu", this.data.width);
-    this.addBulletToPool("a", this.data.width);
-    this.addBulletToPool("112233", this.data.width);
-    this.addBulletToPool("^_^", this.data.width);
-    this.addBulletToPool("<=====>", this.data.width);
-    */
+    this.setData({
+      counter: this.data.numLanes
+    });
 
     this.initBullets();
     this.moveBullet();
