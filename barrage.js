@@ -5,17 +5,25 @@ Component({
       type: Number,
       value: 0
     },
+    numLanes: {
+      type: Number,
+      value: 0
+    },
+    laneHeight: {
+      type: Number,
+      value: 0
+    },
     bgImage: {
       type: String,
       value: ""
     },
     bgImageWidth: {
-      type: Number,
-      value: 0
+      type: String,
+      value: "0px"
     },
     bgImageHeight: {
-      type: Number,
-      value: 0
+      type: String,
+      value: "0px"
     },
     bulletsUrls: {
       type: String,
@@ -33,7 +41,7 @@ Component({
     bulletsPoolSize: 10,  // bullets pool capacity
     bulletsBuffer: [],    // buffer of bullets that are ready to put into pool, e.g. bullets got from url
     bulletsPerUrl: 0,     // buffer capacity
-    numLanes: 3,
+    numLanes: 5,
     laneHeight: 15,
     nextBulletIndex: -1,
     left: 0,
@@ -188,16 +196,16 @@ Component({
     getBulletsFromUrls() {
       var thisPage = this;
       return new Promise(async (resolve, reject) => {
-      if ((thisPage.data.bulletsUrls.length > 0) && (thisPage.data.bulletsPerUrl > 0)) {
-        var urls = thisPage.data.bulletsUrls.split('|');
-        thisPage.data.bulletsBuffer = [];
-        for (var i = 0;i < urls.length;i++) {
-          var newBulletTexts = await thisPage.getBulletsFromUrlSync(urls[i]);
-          thisPage.data.bulletsBuffer.push(...newBulletTexts);
+        if ((thisPage.data.bulletsUrls.length > 0) && (thisPage.data.bulletsPerUrl > 0)) {
+          var urls = thisPage.data.bulletsUrls.split('|');
+          thisPage.data.bulletsBuffer = [];
+          for (var i = 0;i < urls.length;i++) {
+            var newBulletTexts = await thisPage.getBulletsFromUrlSync(urls[i]);
+            thisPage.data.bulletsBuffer.push(...newBulletTexts);
+          }
         }
-      }
-    });
-  },
+      });
+    },
   },
 
   ready() {
@@ -206,6 +214,18 @@ Component({
         bgImage: this.data.bgImage,
         bgImageWidth: this.data.bgImageWidth,
         bgImageHeight: this.data.bgImageHeight
+      });
+    }
+
+    if (this.data.numLanes < 1) {
+      this.setData({
+        numLanes: 5  // default value of numLanes if not set.
+      });
+    }
+
+    if (this.data.laneHeight < 1) {
+      this.setData({
+        laneHeight: 15  // default value of laneHeight if not set.
       });
     }
 
