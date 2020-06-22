@@ -2,4 +2,7 @@
   position: absolute;
   white-space: nowrap;
   top: 0;
+  background-color: rgba(220, 220, 220, 0.7);
+  border-radius: 4px;
+  padding: 0 4px 0 4px;
 }

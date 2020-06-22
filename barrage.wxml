@@ -2,8 +2,8 @@
   <image wx:if="{{bgImage}}" src="{{bgImage}}"
          style="width:{{bgImageWidth}};height:{{bgImageHeight}};"></image>
   <view wx:for="{{bullets}}" wx:key="*this">
-    <text class="bullet" style="left: {{item.left}}px;top: {{item.top}}px;">
+    <div class="bullet" style="left: {{item.left}}px;top: {{item.top}}px;">
       {{item.text}}
-    </text>
+    </div>
   </view>
 </view>
