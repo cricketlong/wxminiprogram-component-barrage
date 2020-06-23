@@ -38,9 +38,9 @@ Component({
   data: {
     bullets: [],          // displaying bullets
     bulletsPool: [],      // bullets pool
-    bulletsPoolSize: 10,  // bullets pool capacity
+    bulletsPoolSize: 0,   // bullets pool capacity, will be set to bulletsPerUrl*numUrls
     bulletsBuffer: [],    // buffer of bullets that are ready to put into pool, e.g. bullets got from url
-    bulletsPerUrl: 0,     // buffer capacity
+    bulletsPerUrl: 0,     // bullets per url
     numLanes: 5,
     laneHeight: 15,
     nextBulletIndex: -1,
@@ -197,15 +197,20 @@ Component({
       var thisPage = this;
       return new Promise(async (resolve, reject) => {
         if ((thisPage.data.bulletsUrls.length > 0) && (thisPage.data.bulletsPerUrl > 0)) {
-          var urls = thisPage.data.bulletsUrls.split('|');
+          var urls = thisPage.getBulletsUrls();
           thisPage.data.bulletsBuffer = [];
           for (var i = 0;i < urls.length;i++) {
             var newBulletTexts = await thisPage.getBulletsFromUrlSync(urls[i]);
             thisPage.data.bulletsBuffer.push(...newBulletTexts);
           }
         }
+        resolve("");
       });
     },
+
+    getBulletsUrls() {
+      return this.data.bulletsUrls.split('|');
+    }
   },
 
   ready() {
@@ -230,7 +235,8 @@ Component({
     }
 
     this.setData({
-      counter: this.data.numLanes
+      counter: this.data.numLanes,
+      bulletsPoolSize: this.data.bulletsPerUrl * this.getBulletsUrls().length
     });
 
     this.initBullets();
