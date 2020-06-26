@@ -70,7 +70,7 @@ Component({
             bullets[i].left -= thisPage.data.pace;
           } else {
             thisPage.data.counter++;
-            if (thisPage.data.counter >= thisPage.data.bulletsPoolSize) {
+            if (thisPage.data.counter > thisPage.data.bulletsPoolSize) {
               thisPage.data.counter = 0;
               thisPage.getBulletsFromUrls();
             }
