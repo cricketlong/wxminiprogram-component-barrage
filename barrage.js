@@ -32,6 +32,10 @@ Component({
     bulletsPerUrl: {
       type: Number,
       value: 0
+    },
+    displayBullets: {
+      type: Boolean,
+      value: false
     }
   },
 
@@ -46,7 +50,7 @@ Component({
     nextBulletIndex: -1,
     left: 0,
     pace: 5,
-    charWidth: 14,        // Width in pixel of a character.
+    charWidth: 16,        // Width in pixel of a character.
     counter: 0,
     interval: 200
   },
@@ -55,36 +59,51 @@ Component({
     moveBullet: function() {
       var thisPage = this;
       var timer = setInterval(()=> {
-        if ((thisPage.data.bullets.length == 0) && (thisPage.data.bulletsBuffer.length > 0)) {
-          for (var i = 0;i < thisPage.data.bulletsBuffer.length;i++) {
-            var newBulletText = thisPage.data.bulletsBuffer[i];
-            thisPage.addBulletToPool(newBulletText, thisPage.data.width);
-          }
-          thisPage.data.bulletsBuffer = [];
-          thisPage.updateBulletsFromPool();
-        }
-
-        var bullets = thisPage.data.bullets;
-        for (var i = 0;i < bullets.length;i++) {
-          if(bullets[i].left > -bullets[i].width) {
-            bullets[i].left -= thisPage.data.pace;
-          } else {
-            thisPage.data.counter++;
-            if (thisPage.data.counter > thisPage.data.bulletsPoolSize) {
-              thisPage.data.counter = 0;
+        var bullets = [];
+        if (thisPage.data.displayBullets == true) {
+          if (thisPage.data.bullets.length == 0) {
+            if (thisPage.data.bulletsBuffer.length == 0) {
               thisPage.getBulletsFromUrls();
             }
-
-            bullets[i].left = this.data.width;
-            // try to get new bullet
-            if (thisPage.hasNextBullet()) {
-              bullets[i].displaying = false;
-              var top = bullets[i].top;
-              bullets[i] = thisPage.getNextBullet();
-              bullets[i].displaying = true;
-              bullets[i].top = top;
+            else {
+              for (var i = 0;i < thisPage.data.bulletsBuffer.length;i++) {
+                var newBulletText = thisPage.data.bulletsBuffer[i];
+                thisPage.addBulletToPool(newBulletText, thisPage.data.width);
+              }
+              thisPage.data.bulletsBuffer = [];
+              thisPage.updateBulletsFromPool();
             }
           }
+
+          bullets = thisPage.data.bullets;
+          for (var i = 0;i < bullets.length;i++) {
+            if(bullets[i].left > -bullets[i].width) {
+              bullets[i].left -= thisPage.data.pace;
+            } else {
+              thisPage.data.counter++;
+              if (thisPage.data.counter > thisPage.data.bulletsPoolSize) {
+                thisPage.data.counter = 0;
+                thisPage.getBulletsFromUrls();
+              }
+
+              bullets[i].left = this.data.width;
+              // try to get new bullet
+              if (thisPage.hasNextBullet()) {
+                bullets[i].displaying = false;
+                var top = bullets[i].top;
+                bullets[i] = thisPage.getNextBullet();
+                bullets[i].displaying = true;
+                bullets[i].top = top;
+              }
+            }
+          }
+        }
+        else {
+          // clear bullets buffer and pool
+          thisPage.setData({
+            bulletsBuffer: [],
+            bulletsPool: []
+          });
         }
 
         // update all bullets
