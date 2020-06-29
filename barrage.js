@@ -49,10 +49,11 @@ Component({
     laneHeight: 15,
     nextBulletIndex: -1,
     left: 0,
-    pace: 5,
+    minPace: 2,
+    maxPace: 4,
     charWidth: 16,        // Width in pixel of a character.
     counter: 0,
-    interval: 200
+    interval: 80
   },
 
   methods: {
@@ -78,7 +79,7 @@ Component({
           bullets = thisPage.data.bullets;
           for (var i = 0;i < bullets.length;i++) {
             if(bullets[i].left > -bullets[i].width) {
-              bullets[i].left -= thisPage.data.pace;
+              bullets[i].left -= bullets[i].pace;
             } else {
               thisPage.data.counter++;
               if (thisPage.data.counter > thisPage.data.bulletsPoolSize) {
@@ -94,6 +95,7 @@ Component({
                 bullets[i] = thisPage.getNextBullet();
                 bullets[i].displaying = true;
                 bullets[i].top = top;
+                bullets[i].pace = thisPage.getRandomPace();
               }
             }
           }
@@ -134,6 +136,7 @@ Component({
         this.data.bullets.push(this.data.bulletsPool[i]);
         this.data.bullets[i].displaying = true;
         this.data.bullets[i].top = i*this.data.laneHeight;
+        this.data.bullets[i].pace = this.getRandomPace();
       }
       this.data.nextBulletIndex = this.data.numLanes < this.data.bulletsPool.length ?
                                   this.data.numLanes : 0;
@@ -229,6 +232,15 @@ Component({
 
     getBulletsUrls() {
       return this.data.bulletsUrls.split('|');
+    },
+
+    getRandomPace() {
+      var diff = this.data.maxPace - this.data.minPace;
+      if (diff > 0) {
+        return this.data.minPace + Math.random() % (diff + 1);
+      }
+
+      return 1;
     }
   },
 
