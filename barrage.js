@@ -133,10 +133,11 @@ Component({
                      this.data.numLanes : this.data.bulletsPool.length;
 
       for (var i = 0;i < nBullets;i++) {
-        this.data.bullets.push(this.data.bulletsPool[i]);
-        this.data.bullets[i].displaying = true;
-        this.data.bullets[i].top = i*this.data.laneHeight;
-        this.data.bullets[i].pace = this.getRandomPace();
+        var b = this.data.bulletsPool[i];
+        b.displaying = true;
+        b.top = i*this.data.laneHeight;
+        b.pace = this.getRandomPace();
+        this.data.bullets.push(b);
       }
       this.data.nextBulletIndex = this.data.numLanes < this.data.bulletsPool.length ?
                                   this.data.numLanes : 0;
@@ -148,7 +149,10 @@ Component({
           this.updateBulletsFromPool();
         }
         else{
-          this.getBulletsFromUrls();
+          var thisPage = this;
+          this.getBulletsFromUrls().then((bulletsFromUrls) => {
+            thisPage.data.bulletsBuffer = bulletsFromUrls;
+          });
         }
       }
       else {
@@ -204,30 +208,29 @@ Component({
         wx.request({
           url: url,
           success: function(res) {
-            if (res.data.length > thisPage.data.bulletsPerUrl) {
-              resolve(res.data.slice(0, thisPage.data.bulletsPerUrl));
+            var bullets = [];
+            if (bullets.length > thisPage.data.bulletsPerUrl) {
+              bullets = res.data.slice(0, thisPage.data.bulletsPerUrl);
             }
             else {
-              resolve(res.data);
+              bullets = res.data;
             }
+            resolve(bullets.reverse());
           }
         });
       });
     },
 
-    getBulletsFromUrls() {
-      var thisPage = this;
-      return new Promise(async (resolve, reject) => {
-        if ((thisPage.data.bulletsUrls.length > 0) && (thisPage.data.bulletsPerUrl > 0)) {
-          var urls = thisPage.getBulletsUrls();
-          thisPage.data.bulletsBuffer = [];
-          for (var i = 0;i < urls.length;i++) {
-            var newBulletTexts = await thisPage.getBulletsFromUrlSync(urls[i]);
-            thisPage.data.bulletsBuffer.push(...newBulletTexts);
-          }
+    async getBulletsFromUrls() {
+      var bulletsFromUrls = [];
+      if ((this.data.bulletsUrls.length > 0) && (this.data.bulletsPerUrl > 0)) {
+        var urls = this.getBulletsUrls();
+        for (var i = 0;i < urls.length;i++) {
+          var newBulletTexts = await this.getBulletsFromUrlSync(urls[i]);
+          bulletsFromUrls.push(...newBulletTexts);
         }
-        resolve("");
-      });
+      }
+      return bulletsFromUrls;
     },
 
     getBulletsUrls() {
