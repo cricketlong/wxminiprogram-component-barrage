@@ -53,7 +53,7 @@ Component({
     maxPace: 4,
     charWidth: 16,        // Width in pixel of a character.
     counter: 0,
-    interval: 80
+    interval: 60
   },
 
   methods: {
@@ -84,18 +84,31 @@ Component({
               thisPage.data.counter++;
               if (thisPage.data.counter > thisPage.data.bulletsPoolSize) {
                 thisPage.data.counter = 0;
-                thisPage.getBulletsFromUrls();
+                thisPage.getBulletsFromUrls().then((bulletsFromUrls) => {
+                  thisPage.data.bulletsBuffer = bulletsFromUrls;
+                });
               }
 
               bullets[i].left = this.data.width;
               // try to get new bullet
               if (thisPage.hasNextBullet()) {
+                var nextBullet = thisPage.getNextBullet();
                 bullets[i].displaying = false;
                 var top = bullets[i].top;
-                bullets[i] = thisPage.getNextBullet();
-                bullets[i].displaying = true;
-                bullets[i].top = top;
-                bullets[i].pace = thisPage.getRandomPace();
+
+                if (thisPage.data.bullets.length < thisPage.data.numLanes) {
+                  // there is free lane, add new bullet to free lane.
+                  bullets.push({});
+                  i = bullets.length - 1;
+                  top = i*thisPage.data.laneHeight;
+                }
+
+                bullets[i] = {"displaying": true,
+                              "left": this.data.width,
+                              "pace": thisPage.getRandomPace(),
+                              "text": nextBullet["text"],
+                              "top": top,
+                              "width": nextBullet["width"]};
               }
             }
           }
@@ -169,8 +182,10 @@ Component({
         if (this.data.bulletsPool.length < this.data.bulletsPoolSize) {
           // Add new bullet to pool
           this.addBulletToPool(newBulletText, newBulletText * this.data.charWidth);
-          this.data.nextBulletIndex = this.data.bulletsPool.length - 1;
-          b = this.data.bulletsPool[this.data.nextBulletIndex++];
+          b = this.data.bulletsPool[this.data.bulletsPool.length - 1];
+          this.data.nextBulletIndex = 0;
+
+          return b;
         }
         else {
           // replace a bullet in pool with new bullet
@@ -184,14 +199,18 @@ Component({
         b = this.data.bulletsPool[this.data.nextBulletIndex++];
       }
 
+      if (this.data.nextBulletIndex >= this.data.bulletsPool.length) {
+        this.data.nextBulletIndex = 0;
+      }
+
       // loop maximally this.data.bulletsPool.length times.
       for (var n = 0;n < this.data.bulletsPool.length;n++) {
-        if (this.data.nextBulletIndex >= this.data.bulletsPool.length) {
-          this.data.nextBulletIndex = 0;
-        }
-
         if (this.data.bulletsPool[this.data.nextBulletIndex].displaying == true) {
           this.data.nextBulletIndex++;
+        }
+
+        if (this.data.nextBulletIndex >= this.data.bulletsPool.length) {
+          this.data.nextBulletIndex = 0;
         }
       }  
 
