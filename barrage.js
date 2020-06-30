@@ -49,8 +49,8 @@ Component({
     laneHeight: 15,
     nextBulletIndex: -1,
     left: 0,
-    minPace: 2,
-    maxPace: 4,
+    minPace: 1,
+    maxPace: 2,
     charWidth: 16,        // Width in pixel of a character.
     counter: 0,
     interval: 60
@@ -86,6 +86,9 @@ Component({
                 thisPage.data.counter = 0;
                 thisPage.getBulletsFromUrls().then((bulletsFromUrls) => {
                   thisPage.data.bulletsBuffer = bulletsFromUrls;
+                  thisPage.setData({
+                    bulletsPoolSize: bulletsFromUrls.length
+                  });
                 });
               }
 
@@ -192,6 +195,7 @@ Component({
           b = this.data.bulletsPool[this.data.nextBulletIndex++];
           b.text = newBulletText;
           b.width = newBulletText.length * this.data.charWidth;
+          console.log(this.data.bulletsPool);
         }
       }
       else {
@@ -199,7 +203,8 @@ Component({
         b = this.data.bulletsPool[this.data.nextBulletIndex++];
       }
 
-      if (this.data.nextBulletIndex >= this.data.bulletsPool.length) {
+      if ((this.data.nextBulletIndex >= this.data.bulletsPool.length) ||
+          (this.data.nextBulletIndex >= this.data.bulletsPoolSize)) {
         this.data.nextBulletIndex = 0;
       }
 
