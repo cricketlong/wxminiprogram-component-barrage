@@ -64,8 +64,13 @@ Component({
         if (thisPage.data.displayBullets == true) {
           if (thisPage.data.bullets.length == 0) {
             if (thisPage.data.bulletsBuffer.length == 0) {
-              thisPage.getBulletsFromUrls();
-            }
+              thisPage.getBulletsFromUrls().then((bulletsFromUrls) => {
+                thisPage.data.bulletsBuffer = bulletsFromUrls;
+                thisPage.setData({
+                  bulletsPoolSize: bulletsFromUrls.length
+                });
+              });
+          }
             else {
               for (var i = 0;i < thisPage.data.bulletsBuffer.length;i++) {
                 var newBulletText = thisPage.data.bulletsBuffer[i];
