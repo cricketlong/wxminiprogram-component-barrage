@@ -36,6 +36,18 @@ Component({
     displayBullets: {
       type: Boolean,
       value: false
+    },
+    minPace: {
+      type: Number,
+      value: 0
+    },
+    maxPace: {
+      type: Number,
+      value: 0
+    },
+    interval: {
+      type: Number,
+      value: 0
     }
   },
 
@@ -45,15 +57,15 @@ Component({
     bulletsPoolSize: 0,   // bullets pool capacity, will be set to bulletsPerUrl*numUrls
     bulletsBuffer: [],    // buffer of bullets that are ready to put into pool, e.g. bullets got from url
     bulletsPerUrl: 0,     // bullets per url
-    numLanes: 5,
-    laneHeight: 15,
     nextBulletIndex: -1,
     left: 0,
-    minPace: 1,
-    maxPace: 2,
-    charWidth: 16,        // Width in pixel of a character.
+    charWidth: 18,        // Width in pixel of a character.
     counter: 0,
-    interval: 60
+    numLanes: 0,          // set by property
+    laneHeight: 0,        // set by property
+    minPace: 0,           // set by property
+    maxPace: 0,           // set by property
+    interval: 40          // set by property
   },
 
   methods: {
